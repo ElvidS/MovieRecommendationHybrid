@@ -157,7 +157,7 @@ def run_calculation(df, hybrid_model, user_fav_movie):
 
     content_df, collab_df, hybrid_df = hybrid_model.recommend_movies(user_fav_movie, df)
     # Display the result in Streamlit
-    st.write("We found", hybrid_df.shape[0],"Movies for you:")
+    st.write("We have", hybrid_df.shape[0],"movie recommendations for you:")
     
     Display_Recommendation_Posters(hybrid_df,df)
     #st.write("The result is:", hybrid_df.head(n=10))
