@@ -6,12 +6,12 @@ from CFKnnMeansModel_Class import collab_filtering_Kmeans_Model, Process_Avg_Rat
 #from CB_TFIDF_CosineSimilarity import tfidf_cosine_sim_model
 # copy-paste functions, from all modelss.
 import pickle
-
+import os.path
+from PIL import Image
 
 # -------------------------------------------------------
 # FUNCTIONS
 # -------------------------------------------------------
-
 
 # 1. Genre Recommendation from content based notebook
 
@@ -85,7 +85,6 @@ def MovieList(df):
 
 # 5. BACKGROUND
 
-
 def add_bg_from_url():
     st.markdown(
         f"""
@@ -99,15 +98,69 @@ def add_bg_from_url():
          """,
         unsafe_allow_html=True
     )
-# 6. Hybrid Recommendation Streamlit function
+# 6. Recommendation Images
+# Set the CSS style for the image and caption container
+# Define custom CSS styles for captions and genres
+caption_styles = """
+    .caption {
+        font-size: 36px;
+        color: white;
+        background-color: black;
+        padding: 5px;
+        font-weight: bold;
+        text-align: center;
+        margin-top: -10px;
+        margin-bottom: 10px;
+    }
+"""
 
-
+genre_styles = """
+    .genre {
+        font-size: 24px;
+        color: white;
+        font-weight: bold;
+        background-color: black;
+        padding: 5px;
+        text-align: center;
+    }
+"""
+def Display_Recommendation_Posters(recommendation_df,df):
+    poster_paths=[]
+    genres=[]
+    captions=recommendation_df.title
+    for movietitle in captions:
+        movieId=df[df['title']==movietitle].movieId.unique()[0]
+        genre=df[df['title']==movietitle].genres.unique()[0]
+        posterPath="MovieRecommendationHybrid/MoviePosters/"+str(movieId)+".png"
+        #If poster does not exist, just take the default poster (no poster found image)
+        if os.path.isfile(posterPath)!=True:
+            posterPath="MovieRecommendationHybrid/MoviePosters/Default.png"
+        
+        poster_paths.append(posterPath)
+        genres.append(genre)
+    
+    # Display images in two columns, maximum 2 posters per row
+    col1, col2 = st.columns(2)
+    
+    for i in range(0, len(poster_paths), 2):
+        with col1:
+            if i < len(poster_paths):
+                st.image(Image.open(poster_paths[i]), caption=(captions[i] + "\n" + genres[i]), width=250, output_format='html')
+        with col2:
+            if i+1 < len(poster_paths):
+                st.image(Image.open(poster_paths[i+1]), caption=(captions[i+1] + "\n" + genres[i+1]), width=250, output_format='html')
+    # Add custom CSS styles to the page
+    st.markdown("<style>" + caption_styles + genre_styles + "</style>", unsafe_allow_html=True)
+    
+# 7. Hybrid Recommendation Streamlit function
 def run_calculation(df, hybrid_model, user_fav_movie):
 
     content_df, collab_df, hybrid_df = hybrid_model.recommend_movies(user_fav_movie, df)
     # Display the result in Streamlit
-    st.write("The result is:", hybrid_df.head(n=10))
-
+    st.write("We found", hybrid_df.shape[0],"Movies for you:")
+    
+    Display_Recommendation_Posters(hybrid_df,df)
+    #st.write("The result is:", hybrid_df.head(n=10))
 # end of functions
 # -----------------------------------------------
 
@@ -156,8 +209,8 @@ if options:
     st.write(f"You selected {len(options)} movie:")
     for movie in options:
         st.write(f"- {movie}")
-else:
-    st.write("Please select one movie")
+#else:
+#    st.write("Please select one movie")
 
 # Load Hybrid Model
 hybrid_model = pickle.load(open('MovieRecommendationHybrid/Notebooks/SmallDataSet_Notebooks/Model_hybrid.sav', 'rb'))
