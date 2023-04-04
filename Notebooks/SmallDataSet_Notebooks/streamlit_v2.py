@@ -90,7 +90,8 @@ def add_bg_from_url():
         f"""
          <style>
          .stApp {{
-             background-image: url(https://gallery.yopriceville.com/var/albums/Backgrounds/Cinema_Background.jpg);
+             background-image: url(https://cdn4.vectorstock.com/i/1000x1000/21/93/movie-cinema-screen-background-template-vector-23192193.jpg
+);
              background-attachment: fixed;
              background-size: cover
          }}
@@ -145,12 +146,12 @@ def Display_Recommendation_Posters(recommendation_df,df):
     for i in range(0, len(poster_paths), 2):
         with col1:
             if i < len(poster_paths):
-                st.image(Image.open(poster_paths[i]), caption=(captions[i] + "\n" + genres[i]), width=250, output_format='html')
+                st.image(Image.open(poster_paths[i]),  width=250, output_format='html')
         with col2:
             if i+1 < len(poster_paths):
-                st.image(Image.open(poster_paths[i+1]), caption=(captions[i+1] + "\n" + genres[i+1]), width=250, output_format='html')
+                st.image(Image.open(poster_paths[i+1]),  width=250, output_format='html')
     # Add custom CSS styles to the page
-    st.markdown("<style>" + caption_styles + genre_styles + "</style>", unsafe_allow_html=True)
+    #st.markdown("<style>" + caption_styles + genre_styles + "</style>", unsafe_allow_html=True)
     
 # 7. Hybrid Recommendation Streamlit function
 def run_calculation(df, hybrid_model, user_fav_movie):
